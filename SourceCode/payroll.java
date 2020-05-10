@@ -2,6 +2,7 @@ package payroll_method;
 
 import java.util.*;
 import java.text.*;
+import org.json.simple.JSONObject;
 
 interface salary_interface{
 
@@ -181,8 +182,12 @@ private salary_interface salary;
 private sales_interface sales;
 private union_interface union_membership;
 private float due_amount;
+private String acc_no;
+private String address;
+private String paymaster;
+private int payment_option;
 employee(String fname,String lname,String empid,salary_interface s,sales_interface t,
-	union_interface u,float d){
+	union_interface u,float d,String a,String b,String c,int option){
 	this.first_name=fname;
 	this.last_name=lname;
 	this.employee_id=empid;
@@ -190,6 +195,10 @@ employee(String fname,String lname,String empid,salary_interface s,sales_interfa
 	this.sales=t;
 	this.union_membership=u;
 	this.due_amount=d;
+	this.acc_no=a;
+	this.address=b;
+	this.paymaster=c;
+	this.payment_option=option;
 }
 
 public void posttime(float duration){
@@ -214,6 +223,39 @@ public void charge_members(HashMap<String,Float> services){
 	union_membership.submit_fee(services);
 }
 
+public void change_salaryrate(float rate){
+	salary.change_rate(rate);
+}
+
+public void change_commision(float sale){
+	sales.change_commision(sale);
+}
+
+public void payment(){
+	due_amount+=union_membership.calculate_due();
+	float sal=salary.salary();
+	sal+=sales.sales_commision();
+	if(sal>=due_amount){
+      sal-=due_amount;
+     System.out.println("salary to be credited is "+ sal);
+     if(payment_option==1)
+     System.out.println("salary is credited to account no "+ acc_no);
+     if(payment_option==2){
+     	System.out.println("your paycheck is sent to adress "+ address);
+     }
+     if(payment_option==3){
+     	System.out.println("plz collect your paycheck from paymaster "+ paymaster);
+     }
+
+	}
+	else{
+         due_amount-=sal;
+
+	}
+
+
+}
+
 
 }
  
@@ -228,6 +270,8 @@ public void charge_members(HashMap<String,Float> services){
         sales_interface t;
 	    union_interface u;
 	    float d=0f;
+	    String a,b,c;
+	    int option;
 	    Scanner in= new Scanner(System.in);
 	    System.out.println("enter first name");
          fname=in.nextLine();
@@ -290,8 +334,19 @@ public void charge_members(HashMap<String,Float> services){
          	u=new union_member(0f);
          }
          else u=new nonunion_member();
+         System.out.println("enter bank account number");
+         a=in.nextLine();
+         System.out.println("enter adress");
+         b=in.nextLine();
+         System.out.println("enter payment_master");
+         c=in.nextLine();
+         System.out.println("enter payment method");
+         System.out.println("if want to credit to bank enter 1");
+         System.out.println("if want your paycheck send to address enter 2");
+         System.out.println("if want to collect from payment master enter 3");
+         option=in.nextInt();
 
-         employee current=new employee(fname,lname,empid,s,t,u,d);
+         employee current=new employee(fname,lname,empid,s,t,u,d,a,b,c,option);
          employee_list.put(empid,current);
          System.out.println("employee added successfully");
 
@@ -419,8 +474,29 @@ public void charge_members(HashMap<String,Float> services){
      Scanner in= new Scanner(System.in);
      empid=in.nextLine(); 
      if(employee_list.containsKey(empid)){
-        
-     }
+
+        System.out.println("press 1 to change salary_rate");
+        System.out.println("press 2 to chnage commision rate");
+        int x;
+        x=in.nextInt();
+        if(x==1){
+        	float sale;
+        	System.out.println("enter modified salary rate");
+        	sale=in.nextFloat();
+        	employee_list.compute(empid,(k,v)->{v.change_salaryrate(sale);return v;});
+
+
+        }
+        if(x==2){
+        	float sale;
+        	System.out.println("enter modified commision rate");
+        	sale=in.nextFloat();
+        	employee_list.compute(empid,(k,v)->{v.change_commision(sale);return v;});
+
+
+
+        }
+ }
      else{
        System.out.println("empid not found");
 
@@ -430,8 +506,17 @@ public void charge_members(HashMap<String,Float> services){
     }
 
 
+    public void run_payrol(){
+    	for(Map.Entry<String,employee> s:employee_list.entrySet()){
+         employee val=s.getValue();
+         val.payment();
 
+    }
 
+    }
+
+  
+    
 
 
 
@@ -450,8 +535,49 @@ public class payroll{
 public static void main(String[] args){
 
  company flip=new company();
- flip.add_employee();
- flip.delete_employee();
+ Scanner in= new Scanner(System.in);
+
+while(true){
+System.out.println("if want to modify company details press 1 else press 0");
+int d;
+d=in.nextInt();
+if(d!=1)
+	break;
+System.out.println("for adding employee press 1");
+System.out.println("for deleting employee press 2");
+System.out.println("for posting time card press 3");
+System.out.println("for posting sales amount press 4");
+System.out.println("to add a employee to union press 5");
+System.out.println("to add service charges press 6");
+System.out.println("to change employee detail press 7");
+d=in.nextInt();
+if(d==1){
+
+	flip.add_employee();
+}
+if(d==2)
+{
+	flip.delete_employee();
+}
+if(d==3){
+	flip.post_timecard();
+}
+if(d==4){
+	flip.post_sales_receipt();
+}
+if(d==5){
+	flip.add_union_membership();
+}
+if(d==6){
+	flip.add_service_charges();
+}
+if(d==7){
+	flip.edit_employee_details();
+}
+
+}
+
+flip.run_payrol();
  
 }
 

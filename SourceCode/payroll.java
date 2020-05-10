@@ -132,7 +132,7 @@ class nonsales_employee implements sales_interface{
 interface union_interface{
 
   public float calculate_due();
-  public void submit_fee(Map<String,Float> charges);
+  public void submit_fee(HashMap<String,Float> charges);
 
 }
 
@@ -147,12 +147,13 @@ private float weekly_due;
   	weekly_due=0f;
   	return total;
   }
-  public void submit_fee(Map<String,Float> charges){
+  public void submit_fee(HashMap<String,Float> charges){
     for(Map.Entry<String,Float> s:charges.entrySet()){
          Float val=s.getValue();
          weekly_due+=val;
 
     }
+    System.out.println("fee successfully a[pplied");
 
   }
 
@@ -163,7 +164,7 @@ class nonunion_member implements union_interface{
   public float calculate_due(){
   	return 0f;
   }
-  public void submit_fee(Map<String,Float> charges){
+  public void submit_fee(HashMap<String,Float> charges){
   	System.out.println("not applicable");
   }
 
@@ -197,6 +198,20 @@ public void posttime(float duration){
 }
 public void postsale(float sale){
 	sales.add_sales(sale);
+}
+public void add_to_union(){
+  if(union_membership instanceof union_member){
+  	System.out.println("already a member");
+  }
+  else{
+  	union_membership=new union_member(0f);
+  	System.out.println("successfuly added to union");
+  }
+
+}
+
+public void charge_members(HashMap<String,Float> services){
+	union_membership.submit_fee(services);
 }
 
 
@@ -347,10 +362,83 @@ public void postsale(float sale){
 
     }
 
+    public void add_union_membership(){
+     String empid;
+     Scanner in= new Scanner(System.in);
+     empid=in.nextLine(); 
+     if(employee_list.containsKey(empid)){
+        employee_list.compute(empid,(k,v)->{v.add_to_union();return v;});
+
+     }
+     else{
+       System.out.println("empid not found");
+
+     }
+
+
+
+    }
+
+    public void add_service_charges(){
+     String empid;
+     String name;
+     float charge;
+     Scanner in= new Scanner(System.in);
+     empid=in.nextLine(); 
+        if(employee_list.containsKey(empid)){
+               HashMap<String,Float> services=new HashMap<>();
+               while(true){
+               	System.out.println("if want to enter serive press 1 else press 2");
+               	int x;
+               	x=in.nextInt();
+               	if(x!=1)
+               		break;
+               	System.out.println("enter service name");
+               	name=in.nextLine();
+               	System.out.println("enter service charge");
+               	charge=in.nextFloat();
+               	services.put(name,Float.valueOf(charge));
+                }
+                employee_list.compute(empid,(k,v)->{v.charge_members(services);return v;});
+
+        }
+        else
+        {
+        	System.out.println("empid not found");
+        }
+
+
+
+
+
+    }
+
+
+    public void edit_employee_details(){
+     String empid;
+     Scanner in= new Scanner(System.in);
+     empid=in.nextLine(); 
+     if(employee_list.containsKey(empid)){
+        
+     }
+     else{
+       System.out.println("empid not found");
+
+     }
+
+
+    }
+
+
+
+
+
+
 
 
 
  }
+        
 
 
 

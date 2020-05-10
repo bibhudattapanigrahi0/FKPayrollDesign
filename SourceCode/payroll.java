@@ -275,9 +275,26 @@ employee(String fname,String lname,String empid,salary_interface s,sales_interfa
  
  }
     public void delete_employee(){
+    	  String empid;
+           Scanner in= new Scanner(System.in);
+	      System.out.println("enter employee_id of employee to be deleted");
+	      empid=in.nextLine();
+	      if(employee_list.containsKey(empid)){
+	      	employee_list.remove(empid);
+	         System.out.println("employee record deleted successfully");
+
+
+	      }
+	      else{
+	      	System.out.println("record not found");
+
+	      }
 
     }
     public void post_timecard(String emp_id,float duration){
+
+
+
 
     }
     public void post_sales_receipt(String emp_id,float total_sale){
@@ -300,6 +317,7 @@ public static void main(String[] args){
 
  company flip=new company();
  flip.add_employee();
+ flip.delete_employee();
  
 }
 

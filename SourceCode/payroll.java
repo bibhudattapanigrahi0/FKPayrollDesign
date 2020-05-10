@@ -191,6 +191,14 @@ employee(String fname,String lname,String empid,salary_interface s,sales_interfa
 	this.due_amount=d;
 }
 
+public void posttime(float duration){
+	salary.upload_time(duration);
+
+}
+public void postsale(float sale){
+	sales.add_sales(sale);
+}
+
 
 }
  
@@ -291,13 +299,51 @@ employee(String fname,String lname,String empid,salary_interface s,sales_interfa
 	      }
 
     }
-    public void post_timecard(String emp_id,float duration){
+    public void post_timecard(){
+           
+           System.out.println("enter employee_id of uploading employee");
+           String empid;float duration;
+           Scanner in= new Scanner(System.in);
+           empid=in.nextLine();
+           System.out.println("enter number of hour worked");
+           duration =in.nextFloat();
+           if(duration>24f){
+           	System.out.println("invalid entry");
+           }
+           else{
+              if(employee_list.containsKey(empid)){
+                employee_list.compute(empid,(k,v)->{v.posttime(duration);return v;});
+                System.out.println("time card posted successfully");
 
+              }
+              else{
+              	System.out.println("empid not found");
+              }
+              
+           }
+
+           
 
 
 
     }
-    public void post_sales_receipt(String emp_id,float total_sale){
+    public void post_sales_receipt(){
+           System.out.println("enter employee_id of uploading employee");
+           String empid;float sale;
+           Scanner in= new Scanner(System.in);
+           empid=in.nextLine();    
+           System.out.println("enter sales amount");
+           sale=in.nextFloat();
+              if(employee_list.containsKey(empid)){
+                employee_list.compute(empid,(k,v)->{v.postsale(sale);return v;});
+                System.out.println("sales amount posted successfully");
+
+              }
+              else{
+              	System.out.println("empid not found");
+              }         
+
+
 
     }
 
